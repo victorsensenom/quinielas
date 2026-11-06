@@ -2,7 +2,7 @@
 
 Programa gratuito para Windows que ayuda a **hacer la quiniela de la semana**, **subirla a la web de eduardolosilla.es** y **seguirla en directo**: aciertos, premios estimados y lo que cobrarías.
 
-**[⬇ Descargar para Windows](https://github.com/victorsensenom/quinielas/releases/latest)**: gratis, sin instalar nada.
+**[⬇ Descargar para Windows (Quiniela-windows.zip)](https://github.com/victorsensenom/quinielas/releases/latest/download/Quiniela-windows.zip)**: gratis.
 
 ![El programa en marcha: directo, simulación y generador](docs/img/demo.gif)
 
