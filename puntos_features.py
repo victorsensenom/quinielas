@@ -29,7 +29,9 @@ import re
 
 import ligas
 
-BASE = os.path.dirname(os.path.abspath(__file__))
+import rutas
+
+BASE = rutas.CARPETA
 RAW = os.path.join(BASE, "data", "raw", "escrutinios")
 DIR = os.path.join(BASE, "data", "ligas")
 F_QUINIELA = os.path.join(DIR, "variables_quiniela.csv")

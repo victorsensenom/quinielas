@@ -22,7 +22,9 @@ import puntos_modelo as pm
 from strategies import valor_model as vm
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
+import rutas  # noqa: E402
+
+ROOT = rutas.CARPETA
 PESOS = os.path.join(ROOT, "data", "ligas", "puntos_pesos.json")
 TABLA = os.path.join(ROOT, "data", "ligas", "variables_quiniela.csv")
 FORMAS = {"6D": (0, 6), "3T1D": (3, 1), "2T2D": (2, 2), "1T4D": (1, 4)}

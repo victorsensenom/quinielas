@@ -2,7 +2,9 @@
 
 Programa gratuito para Windows que ayuda a **hacer la quiniela de la semana**, **subirla a la web de eduardolosilla.es** y **seguirla en directo**: aciertos, premios estimados y lo que cobrarías.
 
-![Seguimiento en directo de una jornada](docs/img/escrutinio.png)
+**[⬇ Descargar para Windows](https://github.com/victorsensenom/quinielas/releases/latest)**: gratis, sin instalar nada.
+
+![El programa en marcha: directo, simulación y generador](docs/img/demo.gif)
 
 > ⚠️ **Antes de nada:** la quiniela es un juego de azar. De cada euro jugado, solo unos 55 céntimos vuelven en premios. Este programa **no garantiza premios ni ganancias**: ayuda a elegir columnas con criterio y a seguir tu boleto. Juega solo lo que estés dispuesto a perder. Solo para mayores de 18 años. ¿Necesitas ayuda? [jugarbien.es](https://www.jugarbien.es)
 
@@ -24,15 +26,24 @@ Programa gratuito para Windows que ayuda a **hacer la quiniela de la semana**, *
 
 ## Instalación (Windows)
 
-1. **Instala Python** (gratis) desde [python.org/downloads](https://www.python.org/downloads/). Necesitas la versión **3.12 o superior**.
-   - En la primera pantalla del instalador, **marca la casilla "Add python.exe to PATH"**.
-2. **Descarga el programa.** Arriba en esta página, pulsa el botón verde **`<> Code`** y luego **`Download ZIP`**.
-3. **Descomprime el ZIP** donde quieras, por ejemplo en `C:\quinielas`.
-4. **Doble clic en `Quiniela.bat`.**
-   - La primera vez instala lo que necesita (numpy) y descarga datos de las ligas. Puede tardar uno o dos minutos.
-   - Necesita conexión a internet: los datos de cada jornada se descargan al momento.
+### Opción fácil: descargar y abrir (recomendada)
 
-Si al abrirlo sale un error en la ventana negra, cópialo y abre una [incidencia](../../issues) en GitHub.
+1. Ve a **[Releases](https://github.com/victorsensenom/quinielas/releases/latest)** y descarga **`Quiniela-windows.zip`**.
+2. **Descomprímelo** donde quieras, por ejemplo en `C:\quinielas`. Es importante descomprimirlo; no lo abras desde dentro del ZIP.
+3. Entra en la carpeta `Quiniela` y haz **doble clic en `Quiniela.exe`**. No hace falta instalar nada más.
+   - Si Windows muestra "Windows protegió su PC", pulsa **"Más información" → "Ejecutar de todas formas"**. Sale con los programas nuevos que aún no son conocidos.
+   - La primera vez descarga datos de las ligas y puede tardar un minuto. Necesita conexión a internet.
+4. Tus apuestas se guardan en la carpeta `mis_apuestas`, junto al programa. Si lo actualizas a una versión nueva, copia esa carpeta a la nueva.
+
+### Opción con Python (para quien prefiera ver el código)
+
+1. Instala **Python 3.12 o superior** desde [python.org/downloads](https://www.python.org/downloads/), marcando **"Add python.exe to PATH"**.
+2. Pulsa el botón verde **`<> Code` → `Download ZIP`** de esta página y descomprímelo.
+3. Doble clic en **`Quiniela.bat`**. La primera vez instala numpy sola.
+
+Si al abrirlo sale algún error, abre una [incidencia](../../issues) en GitHub con el mensaje.
+
+![Seguimiento en directo de una jornada](docs/img/escrutinio.png)
 
 ---
 
@@ -135,6 +146,8 @@ python -m unittest discover -s engine/tests -t .
 ```
 
 Las estrategias están en `strategies/`; la que usa el programa es `valor_mix.py`.
+
+Para crear el `Quiniela.exe` y el ZIP de descarga: `python -m pip install pyinstaller numpy` y luego `python empaquetar.py` (queda en `dist/`).
 
 ---
 

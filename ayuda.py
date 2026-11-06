@@ -7,7 +7,9 @@ import json
 import os
 import tkinter as tk
 
-CARPETA = os.path.dirname(os.path.abspath(__file__))
+import rutas
+
+CARPETA = rutas.CARPETA
 VISTO = os.path.join(CARPETA, "ayuda.json")
 ROJO, AZUL = "#e53e3e", "#1a365d"
 

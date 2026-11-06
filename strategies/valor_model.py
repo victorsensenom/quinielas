@@ -53,7 +53,9 @@ TAX_RATE = 0.20
 # en 2017-2022 (optimo ~0,9; con 1,0 el modelo sobrestima la ventaja de prob frente a LAE en
 # combinaciones de 14 partidos: log(prob/lae) observado 0,42 vs esperado 0,53).
 ALPHA = 0.9
-DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+import rutas  # noqa: E402
+
+DATA_DIR = os.path.join(rutas.CARPETA, "data")
 
 
 # --------------------------------------------------------------------------- impuestos

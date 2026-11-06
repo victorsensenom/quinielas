@@ -21,7 +21,9 @@ import sys
 
 import numpy as np
 
-BASE = os.path.dirname(os.path.abspath(__file__))
+import rutas  # noqa: E402
+
+BASE = rutas.CARPETA
 sys.path.insert(0, BASE)
 
 import generar_jornada as gj  # noqa: E402  (solo se reutilizan sus funciones de descarga)

@@ -16,3 +16,5 @@ data/ligas/*.csv
 results/
 scratch/
 lib/ayuda.json
+dist/
+build/

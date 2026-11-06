@@ -21,7 +21,9 @@ import time
 import unicodedata
 import urllib.request
 
-BASE = os.path.dirname(os.path.abspath(__file__))
+import rutas
+
+BASE = rutas.CARPETA
 DIR = os.path.join(BASE, "data", "ligas")
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124.0.0.0 Safari/537.36"
 URL = "https://football-data.co.uk/mmz4281/{s}/{d}.csv"

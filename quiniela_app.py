@@ -26,6 +26,7 @@ import numpy as np
 import generar_jornada as gj
 import estimacion
 import ayuda
+import rutas
 import cierre
 import clasificacion
 import ligas
@@ -38,7 +39,7 @@ from strategies.valor_mix import Strategy
 
 GOALS = ["0", "1", "2", "M"]
 
-CARPETA = os.path.dirname(os.path.abspath(__file__))
+CARPETA = rutas.CARPETA
 
 
 def poner_icono(ventana):
@@ -542,7 +543,7 @@ class Generador(tk.Toplevel):
         self.estado.config(text=f"Guardado en {path} (formato de la web, con el pleno al 15 en cada línea)")
 
 
-APUESTAS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mis_apuestas")
+APUESTAS_DIR = os.path.join(rutas.CARPETA, "mis_apuestas")
 INDICE = os.path.join(APUESTAS_DIR, "historial.json")
 
 
@@ -1148,7 +1149,7 @@ def mostrar(parent, titulo, texto):
 
 
 if __name__ == "__main__":
-    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    os.chdir(rutas.CARPETA)
     try:   # para que la barra de tareas de Windows muestre el icono del programa y no el de Python
         import ctypes
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("quinielas.programa")

@@ -31,7 +31,9 @@ import unicodedata
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DATA_DIR = os.path.join(os.path.dirname(HERE), "data")
+import rutas  # noqa: E402
+
+DATA_DIR = os.path.join(rutas.CARPETA, "data")
 PARAMS_PATH = os.path.join(DATA_DIR, "calibracion.json")
 EPS = 1e-4
 
