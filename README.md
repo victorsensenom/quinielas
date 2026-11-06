@@ -136,6 +136,12 @@ Las estrategias están en `strategies/`; la que usa el programa es `valor_mix.py
 
 ---
 
+## Apoya el proyecto
+
+El programa es gratuito. Si te resulta útil y quieres invitarme a un café: **[Donar con PayPal](https://paypal.me/Iquinielas)** ☕
+
+También puedes usar el botón **"♥ Donar"** del propio programa.
+
 ## Licencia
 
 [MIT](LICENSE): puedes usarlo, copiarlo y modificarlo libremente, sin garantía de ningún tipo.

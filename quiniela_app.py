@@ -37,8 +37,25 @@ from strategies.valor_mix import Strategy
 
 GOALS = ["0", "1", "2", "M"]
 
+CARPETA = os.path.dirname(os.path.abspath(__file__))
+
+
+def poner_icono(ventana):
+    """Icono del programa (icono.ico / icono.png junto al programa); si no están, se queda el de Python."""
+    try:
+        ico = os.path.join(CARPETA, "icono.ico")
+        if os.path.exists(ico):
+            ventana.iconbitmap(ico)
+        png = os.path.join(CARPETA, "icono.png")
+        if os.path.exists(png):
+            ventana._icono = tk.PhotoImage(file=png)
+            ventana.iconphoto(True, ventana._icono)
+    except tk.TclError:
+        pass
+
+
 # Enlace para invitar al autor a un café (PayPal). Vacío = no se muestra el botón.
-DONAR_URL = ""
+DONAR_URL = "https://paypal.me/Iquinielas"
 REPO_URL = "https://github.com/victorsensenom/quinielas"
 
 # colores de la ventana del generador
@@ -54,6 +71,7 @@ class Generador(tk.Toplevel):
     def __init__(self, master):
         super().__init__(master)
         self.title("Generar quiniela")
+        poner_icono(self)
         self.resizable(True, True)
         self.info = None
         self.web_prob = None
@@ -500,6 +518,7 @@ class Principal(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Quiniela · escrutinio")
+        poner_icono(self)
         try:
             self.state("zoomed")  # maximizada, para que no la tape la barra de tareas
         except tk.TclError:
@@ -1000,6 +1019,11 @@ def mostrar(parent, titulo, texto):
 
 if __name__ == "__main__":
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    try:   # para que la barra de tareas de Windows muestre el icono del programa y no el de Python
+        import ctypes
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("quinielas.programa")
+    except (AttributeError, OSError):
+        pass
     try:
         Principal().mainloop()
     except Exception:  # noqa: BLE001  con pythonw no hay consola: deja el error a la vista
