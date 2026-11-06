@@ -1,0 +1,17 @@
+{
+ "prob": {
+  "boleto": "prob_auto50",
+  "con_valor": "prob_valor",
+  "mejor_global": "prob_valor"
+ },
+ "A": {
+  "boleto": "A_auto50",
+  "con_valor": "A_valor",
+  "mejor_global": "A_valor"
+ },
+ "B": {
+  "boleto": "B_auto50",
+  "con_valor": "B_valor",
+  "mejor_global": "B_valor"
+ }
+}

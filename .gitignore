@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+
+# Datos personales y generados: no se suben
+mis_apuestas/
+jornadas_generadas/
+quiniela_app_error.log
+*.log
+
+# Datos descargados (el programa los baja solo)
+data/raw/
+data/*.csv
+data/calibracion.json
+data/ligas/*.csv
+results/
+scratch/
+lib/
