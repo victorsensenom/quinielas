@@ -15,4 +15,4 @@ data/calibracion.json
 data/ligas/*.csv
 results/
 scratch/
-lib/
+lib/ayuda.json

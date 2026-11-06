@@ -25,6 +25,7 @@ import numpy as np
 
 import generar_jornada as gj
 import estimacion
+import ayuda
 import cierre
 import clasificacion
 import ligas
@@ -95,9 +96,13 @@ class Generador(tk.Toplevel):
         ttk.Label(top, text="   Gasto (€):").pack(side="left")
         self.var_gasto = tk.StringVar(value="48")
         self.var_gasto.trace_add("write", lambda *_: self.actualiza_cols())
-        ttk.Entry(top, width=7, textvariable=self.var_gasto).pack(side="left", padx=4)
+        self.ent_gasto = ttk.Entry(top, width=7, textvariable=self.var_gasto)
+        self.ent_gasto.pack(side="left", padx=4)
         self.lbl_cols = ttk.Label(top, text="")
         self.lbl_cols.pack(side="left")
+        self.b_ayuda = tk.Button(top, text="? Ayuda", command=self.visita, bg="#2b6cb0", fg="white", relief="flat",
+                                 font=("Segoe UI", 9, "bold"), padx=10, cursor="hand2")
+        self.b_ayuda.pack(side="right")
 
         banda = tk.Frame(self, bg=C_AZUL)
         banda.pack(fill="x", padx=8, pady=(0, 6))
@@ -164,12 +169,14 @@ class Generador(tk.Toplevel):
         est.pack(fill="x")
         ttk.Label(est, text="Más favoritos").pack(side="left")
         self.var_b = tk.DoubleVar(value=0.5)
-        ttk.Scale(est, from_=0.0, to=1.0, variable=self.var_b, length=180).pack(side="left", padx=4)
+        self.escala = ttk.Scale(est, from_=0.0, to=1.0, variable=self.var_b, length=180)
+        self.escala.pack(side="left", padx=4)
         ttk.Label(est, text="Más valor (recomendado: centro)").pack(side="left")
 
         bot = ttk.Frame(self, padding=8)
         bot.pack(fill="x")
-        ttk.Button(bot, text="Restaurar % de la web", command=self.restaurar).pack(side="left")
+        self.b_rest = ttk.Button(bot, text="Restaurar % de la web", command=self.restaurar)
+        self.b_rest.pack(side="left")
         self.btn_gen = tk.Button(bot, text="Generar quiniela", command=self.generar, bg=C_AZUL2, fg="white", relief="flat",
                                  activebackground=C_AZUL, activeforeground="white", disabledforeground="#e2e8f0",
                                  font=("Segoe UI", 9, "bold"), padx=14, pady=3, cursor="hand2")
@@ -182,6 +189,64 @@ class Generador(tk.Toplevel):
         self.estado = ttk.Label(self, text="", padding=(8, 0, 8, 8), foreground="#555")
         self.estado.pack(anchor="w")
         self.actualiza_cols()
+        ayuda.avisos([
+            (self.cb_t, "Temporada. Para la de ahora no hace falta cambiarla."),
+            (self.ent_j, "Número de jornada. Vacío = la que está abierta esta semana."),
+            (self.btn_load, "Descarga partidos, % de cuotas, % jugados, clasificación y hora de cierre."),
+            (self.ent_gasto, "Cuánto quieres gastar. Cada columna cuesta 0,75 €: 48 € son 64 columnas."),
+            (self.escala, "Izquierda: más favoritos (aciertas más, cobras menos). Centro: lo recomendado. "
+                          "Derecha: más resultados poco jugados."),
+            (self.b_rest, "Deshace tus cambios en los % y vuelve a los de la web."),
+            (self.btn_gen, "Elige las columnas con tu gasto, tus % y el pleno al 15."),
+            (self.btn_save, "Guarda el fichero en el formato de eduardolosilla para subirlo y jugarlo."),
+            (self.b_ayuda, "Vuelve a ver la visita guiada de esta ventana."),
+        ])
+        # que quepa entera en la pantalla: arriba del todo y, si es muy alta, recortando el cuadro de columnas
+        self.update_idletasks()
+        alto_max = self.winfo_screenheight() - 90
+        if self.winfo_reqheight() > alto_max:
+            self.txt.config(height=max(4, 10 - (self.winfo_reqheight() - alto_max) // 18))
+            self.update_idletasks()
+        self.geometry(f"+{max(0, (self.winfo_screenwidth() - self.winfo_reqwidth()) // 2)}+10")
+        if not ayuda.ya_vista("generador"):
+            self.after(800, self.visita)
+
+    def visita(self):
+        self.lift()               # la visita del generador va sobre su ventana: que se vea delante
+        self.focus_force()
+        self.update()
+        r, p = self.rows, self.pts
+        pasos = [
+            ([self.cb_t, self.btn_load], "1. Cargar la jornada",
+             "Deja la jornada vacía y pulsa «Cargar jornada»: se carga la de esta semana con sus 14 partidos y el pleno."),
+            (self.lbl_cierre, "Hora de cierre",
+             "Hasta cuándo puedes jugar. Si quedan menos de 6 horas te avisa; genera la quiniela cerca del cierre, "
+             "cuando los % son más fiables."),
+            (lambda: [r[0][0]], "Partidos y clasificación",
+             "Cada partido con la posición y los puntos de cada equipo en su liga."),
+            (lambda: [r[0][1][0], r[13][1][2]], "Tus %",
+             "Probabilidad de 1, X y 2 según las cuotas. Cámbialos si crees otra cosa: el programa usará los tuyos."),
+            (lambda: [r[0][2], r[13][2]], "Lo que juega la gente",
+             "% jugado de cada signo. Si un resultado probable lo juega poca gente, cobra más si sale."),
+            (lambda: [p[0][0], p[13][5]], "Puntos y propuesta",
+             "Ayuda para revisar: suma por jugar en casa, goles, forma y cara a cara. Verde tiende a 1, rojo a 2, "
+             "ámbar partido abierto. «Propone»: fijo (verde), doble (amarillo) o triple (rojo)."),
+            (self.ent_gasto, "2. Cuánto gastar",
+             "Pon los euros. Cada columna cuesta 0,75 €."),
+            (self.pleno, "Pleno al 15",
+             "% de goles (0, 1, 2, M) de cada equipo. Reparte el pleno entre los marcadores más probables o pon uno solo."),
+            (self.escala, "Estilo",
+             "Más favoritos o más valor (resultados probables y poco jugados). En el centro es lo que mejor ha "
+             "funcionado en las pruebas."),
+            (self.btn_gen, "3. Generar",
+             "Elige las columnas. Verás la probabilidad de 12, 13, 14 y 15 y cuánto pagaría cada columna."),
+            (self.btn_save, "4. Guardar y subir",
+             "Guarda el fichero y súbelo en eduardolosilla.es → Quiniela → Validar Quiniela → Archivos de programas, "
+             "indicando el número de apuestas."),
+            (self.txt, "Tus columnas",
+             "Aquí aparecen las columnas generadas, con su pleno y lo que pagaría cada una si la aciertas."),
+        ]
+        ayuda.Visita(self, pasos, al_terminar=lambda: ayuda.marcar_vista("generador"))
 
     def _pinta_cierre(self):
         txt = cierre.texto(*self.cierre)
@@ -531,17 +596,27 @@ class Principal(tk.Tk):
 
         top = ttk.Frame(self, padding=8)
         top.pack(fill="x")
-        ttk.Button(top, text="Generar quiniela...", command=self.abrir_generador).pack(side="left")
-        ttk.Button(top, text="Cargar fichero de la jornada...", command=self.cargar_fichero).pack(side="left", padx=8)
-        ttk.Button(top, text="Actualizar", command=self.actualizar).pack(side="left")
-        ttk.Button(top, text="Cerrar boleto", command=self.cerrar_boleto).pack(side="left", padx=8)
+        self.b_gen = ttk.Button(top, text="Generar quiniela...", command=self.abrir_generador)
+        self.b_gen.pack(side="left")
+        self.b_cargar = ttk.Button(top, text="Cargar fichero de la jornada...", command=self.cargar_fichero)
+        self.b_cargar.pack(side="left", padx=8)
+        self.b_act = ttk.Button(top, text="Actualizar", command=self.actualizar)
+        self.b_act.pack(side="left")
+        self.b_cerrar = ttk.Button(top, text="Cerrar boleto", command=self.cerrar_boleto)
+        self.b_cerrar.pack(side="left", padx=8)
         self.var_auto = tk.BooleanVar(value=True)
-        ttk.Checkbutton(top, text="Auto cada 60 s", variable=self.var_auto, command=self._auto).pack(side="left", padx=8)
+        self.b_auto = ttk.Checkbutton(top, text="Auto cada 60 s", variable=self.var_auto, command=self._auto)
+        self.b_auto.pack(side="left", padx=8)
         self.lbl_fuente = ttk.Label(top, text="", foreground="#555")
         self.lbl_fuente.pack(side="left", padx=8)
+        self.b_ayuda = tk.Button(top, text="? Ayuda", command=self.visita, bg="#2b6cb0", fg="white", relief="flat",
+                                 font=("Segoe UI", 9, "bold"), padx=10, cursor="hand2")
+        self.b_ayuda.pack(side="right", padx=(4, 8))
+        self.b_donar = None
         if DONAR_URL:
-            tk.Button(top, text="♥ Donar", command=lambda: webbrowser.open(DONAR_URL), bg="#ffc439", fg="#1a202c",
-                      relief="flat", font=("Segoe UI", 9, "bold"), padx=10, cursor="hand2").pack(side="right", padx=(4, 8))
+            self.b_donar = tk.Button(top, text="♥ Donar", command=lambda: webbrowser.open(DONAR_URL), bg="#ffc439",
+                                     fg="#1a202c", relief="flat", font=("Segoe UI", 9, "bold"), padx=10, cursor="hand2")
+            self.b_donar.pack(side="right", padx=(4, 4))
         self.lbl_hora = ttk.Label(top, text="", foreground="#2b6cb0", font=("Segoe UI", 9, "bold"))
         self.lbl_hora.pack(side="right", padx=8)
         self.en_juego = {}  # clave -> (cobro estimado ahora, mejor posibilidad) de jornadas sin escrutar
@@ -559,8 +634,10 @@ class Principal(tk.Tk):
         self.lbl_tot.pack(fill="x", pady=(6, 0))
         bh = ttk.Frame(hist)
         bh.pack(anchor="w", pady=(6, 0))
-        ttk.Button(bh, text="Cambiar nombre", command=self.renombrar).pack(side="left", padx=(0, 6))
-        ttk.Button(bh, text="Quitar del historial", command=self.quitar).pack(side="left")
+        self.b_nombre = ttk.Button(bh, text="Cambiar nombre", command=self.renombrar)
+        self.b_nombre.pack(side="left", padx=(0, 6))
+        self.b_quitar = ttk.Button(bh, text="Quitar del historial", command=self.quitar)
+        self.b_quitar.pack(side="left")
 
         self.panel = PanelDirecto(body, on_simular=self._simulando)
         self.panel.btn_sim.config(command=self._quitar_sim)
@@ -572,6 +649,59 @@ class Principal(tk.Tk):
         if activa:
             self.ver(activa)
         self.after(500, self.rellenar_historial)
+        ayuda.avisos([
+            (self.b_gen, "Abre la ventana para preparar la quiniela de la semana y guardar el fichero."),
+            (self.b_cargar, "Carga tu apuesta: pega el enlace de eduardolosilla o elige un fichero del ordenador."),
+            (self.b_act, "Vuelve a descargar resultados y premios ahora mismo."),
+            (self.b_cerrar, "Cuando la jornada esté escrutada, guarda los premios oficiales de este boleto."),
+            (self.b_auto, "Actualiza solo cada minuto mientras se juegan los partidos."),
+            (self.b_nombre, "Ponle o cambia el nombre al boleto seleccionado del historial."),
+            (self.b_quitar, "Borra del historial el boleto seleccionado."),
+            (self.b_ayuda, "Vuelve a ver esta visita guiada."),
+            (self.b_donar, "Si el programa te resulta útil, invítame a un café."),
+        ])
+        if not ayuda.ya_vista("principal"):
+            self.after(1500, self.visita)
+
+    def visita(self):
+        P = self.panel
+        partidos = lambda: [P.cells[0][0], P.cells[14][7]]
+        pasos = [
+            (self.b_gen, "1. Generar la quiniela",
+             "Empieza aquí cada semana: abre el generador, carga la jornada, elige cuánto gastar y guarda el fichero "
+             "para subirlo a eduardolosilla.es (Quiniela → Validar Quiniela → Archivos de programas)."),
+            (self.b_cargar, "2. Cargar tu apuesta real",
+             "Cuando ya hayas jugado, pega aquí el enlace del fichero de tu apuesta en eduardolosilla "
+             "(o elige el fichero). El programa la seguirá en directo y la guardará en el historial."),
+            (self.lst, "Jornadas jugadas",
+             "Tu historial: cada boleto con lo jugado, lo cobrado y el balance. Tócalo para verlo a la derecha. "
+             "Abajo tienes el total y los botones para cambiar el nombre o quitar un boleto."),
+            (partidos, "Partidos y resultados",
+             "Resultado y minuto de cada partido, el % de tus columnas que lleva 1, X o 2 (el recuadro es el signo "
+             "que va saliendo) y qué % de tus columnas acierta. Toca una fila para marcarla."),
+            (lambda: [r[8] for r in P.cells], "Simular",
+             "Toca una casilla ✎ (o un 1, X, 2) para probar otro resultado: verás cómo cambiarían tus aciertos "
+             "y premios. El marcador real no cambia y «Quitar simulación» vuelve a lo real."),
+            (lambda: [P.ap_cells[0][0], P.ap_cells[-1][14], P.ap_cnt[-1]], "Tus apuestas",
+             "Tus columnas en vertical, ordenadas de más a menos aciertos: verde acierta, rojo falla. "
+             "Con ‹ › pasas de página. Abajo, los aciertos de cada una."),
+            (P.canvas, "Aciertos posibles",
+             "Cuántas columnas pueden llegar a 10, 11, 12, 13, 14 o 15 contando como acertados los partidos que faltan."),
+            (P.prem_f, "Premios",
+             "Acertantes y premio de cada categoría. Mientras se juega, estimación mínima y máxima (como la web); "
+             "al final, los premios oficiales y lo que cobras."),
+            (P.lbl_total, "Lo que puedes cobrar",
+             "Mejor posibilidad si lo que falta sale bien, o lo que cobras cuando acaba. Es una estimación: "
+             "el premio real puede variar."),
+            ([self.b_act, self.b_auto], "Actualizar",
+             "«Auto cada 60 s» refresca solo durante los partidos; «Actualizar» lo hace al momento."),
+            (self.b_cerrar, "Cerrar boleto",
+             "Cuando la jornada esté escrutada (uno o dos días después), guarda los premios oficiales en el historial."),
+            (self.b_ayuda, "¿Dudas?",
+             "Puedes repetir esta visita cuando quieras. Y recuerda: la quiniela es un juego; juega solo lo que "
+             "estés dispuesto a perder."),
+        ]
+        ayuda.Visita(self, pasos, al_terminar=lambda: ayuda.marcar_vista("principal"))
 
     # ------------------------------------------------------------------ historial
     def _buscar(self, clave):

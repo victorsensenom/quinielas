@@ -38,6 +38,8 @@ Si al abrirlo sale un error en la ventana negra, cópialo y abre una [incidencia
 
 ## Cómo se usa
 
+> La primera vez que abras el programa (y el generador) aparece una **visita guiada** que te enseña para qué sirve cada parte. Puedes repetirla cuando quieras con el botón **"? Ayuda"**, y al dejar el ratón sobre un botón verás qué hace.
+
 ### 1. Generar la quiniela de la semana
 
 1. En la ventana principal, pulsa **"Generar quiniela..."**.
